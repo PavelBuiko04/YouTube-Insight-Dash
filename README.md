@@ -82,16 +82,17 @@ Formula: (Likes + Comments) / Views × 100
 - **Like-to-View Ratio** with percentage
 - **Comment-to-View Ratio** with percentage
 - **Engagement Breakdown** visual progress bars
+- **Velocity Score** (Views/Day) showing growth speed and virality
 
 ### 3️⃣ SEO Analysis
 - **Tag Extraction** — All video tags displayed
 - **One-Click Copy** — Copy all tags as comma-separated list
 - **Tag Management** — Easy review and reuse of successful tags
 
-### 4️⃣ Comparison Metrics
-- **Bar Chart** — Compare views, likes, comments of top 5 results
-- **Pie Chart** — Engagement distribution (likes vs comments)
-- **Average Metrics** — See how current video compares to search results
+### 4️⃣ Comparison Metrics  
+- **Interactive Bar Chart** — Compare views, likes, comments across top 5 results
+- **Click to Select** — Click any bar to instantly load that video's detailed analytics
+- **Engagement Pie Chart** — Visual breakdown of likes vs comments distribution
 
 ## 📊 Metrics Explained
 
@@ -101,6 +102,7 @@ Formula: (Likes + Comments) / Views × 100
 | **Like Rate** | Likes / Views × 100 | How many viewers liked the video |
 | **Comment Rate** | Comments / Views × 100 | How many viewers engaged in discussion |
 | **Engagement Level** | Calculated score bracket | Quick reference for performance |
+| **Velocity** | Views / Days since publish | Average views per day; shows virality |
 
 ## 🔧 Installation & Setup
 
@@ -128,7 +130,7 @@ VITE_YOUTUBE_API_KEY=your_api_key_here
 ```bash
 npm run dev
 ```
-Server starts at `http://localhost:5173`
+Server starts at `http://localhost:8000`
 
 ### 4. Build for Production
 ```bash
@@ -148,7 +150,7 @@ npm run build
 3. **Compare** — See how this video performs vs others
 
 ### Interpret Charts
-- **Bar Chart** — Higher bars = more engagement; compare across results
+- **Bar Chart** — Higher bars = more engagement; click any bar to load that video's analytics
 - **Pie Chart** — Distribution of likes vs comments; shows audience preference
 
 ## 🎨 Dark Theme Design

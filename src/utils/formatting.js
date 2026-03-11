@@ -72,3 +72,38 @@ export const calculateAverages = (videos) => {
 
   return { avgViews, avgLikes, avgComments, avgEngagement }
 }
+
+// Calculate days since video publication
+export const getDaysSincePublish = (publishedAt) => {
+  if (!publishedAt) return 0
+  
+  try {
+    const publishDate = new Date(publishedAt)
+    const today = new Date()
+    const timeDiff = today.getTime() - publishDate.getTime()
+    const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24))
+    return Math.max(daysDiff, 1) // Minimum 1 day to avoid division by zero
+  } catch (error) {
+    console.error('Error calculating days:', error)
+    return 1
+  }
+}
+
+// Calculate Velocity (views per day)
+export const calculateVelocity = (viewCount, publishedAt) => {
+  if (!viewCount || viewCount === 0 || !publishedAt) return 0
+  
+  const views = parseInt(viewCount)
+  const days = getDaysSincePublish(publishedAt)
+  return views / days
+}
+
+// Get virality level based on Velocity
+export const getVelocityLevel = (velocity) => {
+  if (velocity > 100000) return { level: 'Viral 🚀', color: 'text-red-400', desc: 'Extremely viral content' }
+  if (velocity > 50000) return { level: 'Trending 🔥', color: 'text-orange-400', desc: 'Very high growth rate' }
+  if (velocity > 10000) return { level: 'Excellent 👍', color: 'text-green-400', desc: 'Strong viewership growth' }
+  if (velocity > 1000) return { level: 'Good ✅', color: 'text-blue-400', desc: 'Healthy growth rate' }
+  if (velocity > 100) return { level: 'Average 📊', color: 'text-yellow-400', desc: 'Moderate growth' }
+  return { level: 'Slow 📉', color: 'text-gray-400', desc: 'Low growth rate' }
+}

@@ -43,6 +43,25 @@ export const getVideoDetails = async (videoId) => {
   }
 }
 
+export const getVideoStatistics = async (videoIds) => {
+  if (!videoIds || videoIds.length === 0) return []
+  
+  try {
+    // YouTube API allows max 50 IDs per request
+    const ids = videoIds.slice(0, 50).join(',')
+    const response = await api.get('/videos', {
+      params: {
+        part: 'snippet,statistics',
+        id: ids,
+      },
+    })
+    return response.data.items || []
+  } catch (error) {
+    console.error('Video statistics error:', error)
+    return []
+  }
+}
+
 export const getChannelDetails = async (channelId) => {
   try {
     const response = await api.get('/channels', {

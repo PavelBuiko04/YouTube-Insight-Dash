@@ -1,6 +1,18 @@
 import { PieChart, Pie, Cell, Legend, Tooltip, ResponsiveContainer } from 'recharts'
+import { Loader2 } from 'lucide-react'
 
-export default function EngagementChart({ video }) {
+export default function EngagementChart({ video, isLoading = false }) {
+  if (isLoading) {
+    return (
+      <div className="bg-gray-900 rounded-lg p-6 border border-gray-800 h-96 flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 className="w-8 h-8 text-youtube-red animate-spin" />
+          <p className="text-gray-400">Loading engagement data...</p>
+        </div>
+      </div>
+    )
+  }
+
   if (!video || !video.statistics) {
     return (
       <div className="bg-gray-900 rounded-lg p-6 border border-gray-800 h-96 flex items-center justify-center">
@@ -20,6 +32,14 @@ export default function EngagementChart({ video }) {
     { name: 'Others', value: Math.max(0, viewCount - likeCount - commentCount) },
   ].filter(item => item.value > 0)
 
+  if (data.length === 0) {
+    return (
+      <div className="bg-gray-900 rounded-lg p-6 border border-gray-800 h-96 flex items-center justify-center">
+        <p className="text-gray-400">No engagement data available</p>
+      </div>
+    )
+  }
+
   const COLORS = ['#10b981', '#f59e0b', '#6b7280']
 
   const CustomTooltip = ({ active, payload }) => {
@@ -27,10 +47,10 @@ export default function EngagementChart({ video }) {
       const total = data.reduce((sum, item) => sum + item.value, 0)
       const percent = ((payload[0].value / total) * 100).toFixed(1)
       return (
-        <div className="bg-gray-900 border border-gray-700 p-2 rounded text-xs text-gray-300">
-          <p className="font-semibold text-white">{payload[0].name}</p>
+        <div className="bg-gray-900 border border-gray-700 p-3 rounded text-xs text-gray-300 shadow-lg">
+          <p className="font-semibold text-white mb-1">{payload[0].name}</p>
           <p>{payload[0].value.toLocaleString()}</p>
-          <p>{percent}%</p>
+          <p className="text-gray-400">{percent}%</p>
         </div>
       )
     }

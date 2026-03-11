@@ -6,12 +6,13 @@ import VideoList from './components/Video/VideoList'
 import AnalyticsPanel from './components/Analytics/AnalyticsPanel'
 import ComparisonChart from './components/Charts/ComparisonChart'
 import EngagementChart from './components/Charts/EngagementChart'
-import { searchVideos, getVideoDetails } from './api/youtubeApi'
+import { searchVideos, getVideoDetails, getVideoStatistics } from './api/youtubeApi'
 
 export default function App() {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedVideoId, setSelectedVideoId] = useState('')
   const [videosList, setVideosList] = useState([])
+  const [videosWithStats, setVideosWithStats] = useState([])
 
   // Fetch search results
   const { data: searchData, isLoading: isSearching } = useQuery({
@@ -27,6 +28,23 @@ export default function App() {
     queryFn: () => getVideoDetails(selectedVideoId),
     enabled: Boolean(selectedVideoId),
   })
+
+  // Fetch stats for comparison videos
+  const { data: comparisonStats } = useQuery({
+    queryKey: ['videoStats', videosList.slice(0, 5).map(v => v.id.videoId).join(',')],
+    queryFn: () => {
+      const ids = videosList.slice(0, 5).map(v => v.id.videoId)
+      return getVideoStatistics(ids)
+    },
+    enabled: videosList.length > 0,
+  })
+
+  // Merge search data with statistics for comparison
+  useEffect(() => {
+    if (comparisonStats && comparisonStats.length > 0) {
+      setVideosWithStats(comparisonStats)
+    }
+  }, [comparisonStats])
 
   // Update video list when search results arrive
   useEffect(() => {
@@ -83,14 +101,17 @@ export default function App() {
               {videoDetails && (
                 <AnalyticsPanel 
                   video={videoDetails} 
-                  similarVideos={videosList.slice(0, 5)} 
+                  similarVideos={videosWithStats} 
                 />
               )}
 
               {/* Charts Section */}
-              {videoDetails && (
+              {videoDetails && videosWithStats.length > 0 && (
                 <div className="space-y-6">
-                  <ComparisonChart videos={videosList.slice(0, 5)} />
+                  <ComparisonChart 
+                    videos={videosWithStats} 
+                    onVideoClick={handleVideoSelect}
+                  />
                   <EngagementChart video={videoDetails} />
                 </div>
               )}
