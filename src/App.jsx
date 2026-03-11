@@ -6,13 +6,14 @@ import VideoList from './components/Video/VideoList'
 import AnalyticsPanel from './components/Analytics/AnalyticsPanel'
 import ComparisonChart from './components/Charts/ComparisonChart'
 import EngagementChart from './components/Charts/EngagementChart'
-import { searchVideos, getVideoDetails, getVideoStatistics } from './api/youtubeApi'
+import { searchVideos, getVideoDetails, getVideoStatistics, searchVideosByChannel } from './api/youtubeApi'
 
 export default function App() {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedVideoId, setSelectedVideoId] = useState('')
   const [videosList, setVideosList] = useState([])
   const [videosWithStats, setVideosWithStats] = useState([])
+  const [channelVideos, setChannelVideos] = useState([])
 
   // Fetch search results
   const { data: searchData, isLoading: isSearching } = useQuery({
@@ -29,14 +30,22 @@ export default function App() {
     enabled: Boolean(selectedVideoId),
   })
 
-  // Fetch stats for comparison videos
+  // Fetch videos from same channel as selected video
+  const { data: channelSearchResults } = useQuery({
+    queryKey: ['channelVideos', videoDetails?.snippet.channelId],
+    queryFn: () => searchVideosByChannel(videoDetails?.snippet.channelId),
+    enabled: Boolean(videoDetails?.snippet.channelId),
+    staleTime: 1000 * 60 * 10,
+  })
+
+  // Fetch stats for comparison videos (from same channel)
   const { data: comparisonStats } = useQuery({
-    queryKey: ['videoStats', videosList.slice(0, 5).map(v => v.id.videoId).join(',')],
+    queryKey: ['videoStats', channelVideos.slice(0, 5).map(v => v.id.videoId).join(',')],
     queryFn: () => {
-      const ids = videosList.slice(0, 5).map(v => v.id.videoId)
+      const ids = channelVideos.slice(0, 5).map(v => v.id.videoId)
       return getVideoStatistics(ids)
     },
-    enabled: videosList.length > 0,
+    enabled: channelVideos.length > 0,
   })
 
   // Merge search data with statistics for comparison
@@ -45,6 +54,15 @@ export default function App() {
       setVideosWithStats(comparisonStats)
     }
   }, [comparisonStats])
+
+  // Update channel videos when channel search results arrive
+  useEffect(() => {
+    if (channelSearchResults?.items) {
+      // Exclude the currently selected video from comparison
+      const filtered = channelSearchResults.items.filter(v => v.id.videoId !== selectedVideoId)
+      setChannelVideos(filtered)
+    }
+  }, [channelSearchResults, selectedVideoId])
 
   // Update video list when search results arrive
   useEffect(() => {

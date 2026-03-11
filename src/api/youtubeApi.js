@@ -77,6 +77,26 @@ export const getChannelDetails = async (channelId) => {
   }
 }
 
+export const searchVideosByChannel = async (channelId) => {
+  if (!channelId) return null
+  
+  try {
+    const response = await api.get('/search', {
+      params: {
+        part: 'snippet',
+        channelId,
+        type: 'video',
+        maxResults: 20,
+        order: 'viewCount',
+      },
+    })
+    return response.data
+  } catch (error) {
+    console.error('Channel search error:', error)
+    return null
+  }
+}
+
 export const getVideoComments = async (videoId) => {
   if (!videoId) return []
   
