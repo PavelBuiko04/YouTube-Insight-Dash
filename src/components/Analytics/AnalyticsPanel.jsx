@@ -1,5 +1,6 @@
-import { Eye, ThumbsUp, MessageSquare, TrendingUp, Copy, Check, Zap } from 'lucide-react'
-import { useState } from 'react'
+import { Eye, ThumbsUp, MessageSquare, TrendingUp, Copy, Check, Zap, MessageCircle } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import { 
   formatNumber, 
   calculateEngagementRate, 
@@ -7,8 +8,11 @@ import {
   truncateText,
   calculateVelocity,
   getVelocityLevel,
-  getDaysSincePublish
+  getDaysSincePublish,
+  analyzeSentiment,
+  getSentimentLevel
 } from '../../utils/formatting'
+import { getVideoComments } from '../../api/youtubeApi'
 
 // Rating of like percentage quality
 const getLikeQuality = (percent) => {
@@ -82,9 +86,27 @@ const SEOTags = ({ tags }) => {
 }
 
 export default function AnalyticsPanel({ video, similarVideos }) {
+  const [sentimentData, setSentimentData] = useState(null)
+  
   if (!video || !video.statistics) {
     return <div className="text-center text-gray-400 py-8">Loading analytics...</div>
   }
+
+  // Fetch comments for sentiment analysis
+  const { data: comments } = useQuery({
+    queryKey: ['videoComments', video.id],
+    queryFn: () => getVideoComments(video.id),
+    enabled: Boolean(video.id),
+    staleTime: 1000 * 60 * 30, // Cache for 30 minutes
+  })
+
+  // Analyze sentiment when comments arrive
+  useEffect(() => {
+    if (comments && comments.length > 0) {
+      const sentiment = analyzeSentiment(comments)
+      setSentimentData(sentiment)
+    }
+  }, [comments])
 
   const stats = video.statistics
   const engagement = calculateEngagementRate(stats)
@@ -151,6 +173,26 @@ export default function AnalyticsPanel({ video, similarVideos }) {
           subtext={`${velocityMeta.level}`}
           color="from-purple-600 to-pink-600"
         />
+        {sentimentData ? (
+          <StatsCard
+            icon={MessageCircle}
+            label="Sentiment Score"
+            value={sentimentData.sentiment}
+            subtext={`${sentimentData.score}% ${getSentimentLevel(sentimentData.sentiment)?.emoji}`}
+            color={getSentimentLevel(sentimentData.sentiment)?.bg || "from-gray-600 to-gray-700"}
+          />
+        ) : (
+          <div className="bg-gradient-to-br from-gray-700 to-gray-800 rounded-lg p-4 text-white border border-opacity-20 border-white animate-pulse">
+            <div className="flex items-start justify-between">
+              <div>
+                <p className="text-sm text-gray-300 mb-2">Sentiment Score</p>
+                <p className="text-2xl font-bold text-gray-500">Analyzing...</p>
+                <p className="text-xs text-gray-400 mt-1">Processing comments</p>
+              </div>
+              <MessageCircle className="w-6 h-6 opacity-60" />
+            </div>
+          </div>
+        )}
         <div className="bg-gradient-to-br from-gray-700 to-gray-800 rounded-lg p-4 text-white border border-opacity-20 border-white">
           <div className="flex items-start justify-between">
             <div>

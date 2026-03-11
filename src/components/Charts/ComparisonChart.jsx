@@ -117,15 +117,4 @@ export default function ComparisonChart({ videos, isLoading = false, onVideoClic
     </div>
   )
 }
-            />
-            <Tooltip content={<CustomTooltip />} />
-            <Legend />
-            <Bar dataKey="views" fill="#3b82f6" name="Views" />
-            <Bar dataKey="likes" fill="#10b981" name="Likes" />
-            <Bar dataKey="comments" fill="#f59e0b" name="Comments" />
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
-    </div>
-  )
-}
+

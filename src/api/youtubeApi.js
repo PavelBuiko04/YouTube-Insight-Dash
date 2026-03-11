@@ -76,3 +76,29 @@ export const getChannelDetails = async (channelId) => {
     throw error
   }
 }
+
+export const getVideoComments = async (videoId) => {
+  if (!videoId) return []
+  
+  try {
+    const response = await api.get('/commentThreads', {
+      params: {
+        part: 'snippet',
+        videoId,
+        maxResults: 20,
+        order: 'relevance',
+        textFormat: 'plainText',
+      },
+    })
+    
+    // Extract comment text from response
+    const comments = (response.data.items || []).map(item => 
+      item.snippet.topLevelComment.snippet.textDisplay
+    )
+    
+    return comments
+  } catch (error) {
+    console.error('Video comments error:', error)
+    return []
+  }
+}
