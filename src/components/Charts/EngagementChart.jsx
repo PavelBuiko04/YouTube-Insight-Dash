@@ -29,7 +29,7 @@ export default function EngagementChart({ video, isLoading = false }) {
   const data = [
     { name: 'Likes', value: likeCount },
     { name: 'Comments', value: commentCount },
-    { name: 'Others', value: Math.max(0, viewCount - likeCount - commentCount) },
+    { name: 'Просмотры', value: Math.max(0, viewCount - likeCount - commentCount) },
   ].filter(item => item.value > 0)
 
   if (data.length === 0) {
@@ -41,16 +41,22 @@ export default function EngagementChart({ video, isLoading = false }) {
   }
 
   const COLORS = ['#10b981', '#f59e0b', '#6b7280']
+  const total = data.reduce((sum, item) => sum + item.value, 0)
+  const formatPercent = (value) => {
+    if (!total) return '0%'
+    const percent = (value / total) * 100
+    const digits = percent < 1 ? 2 : 1
+    return `${percent.toFixed(digits)}%`
+  }
 
   const CustomTooltip = ({ active, payload }) => {
     if (active && payload && payload.length) {
-      const total = data.reduce((sum, item) => sum + item.value, 0)
-      const percent = ((payload[0].value / total) * 100).toFixed(1)
+      const percent = formatPercent(payload[0].value)
       return (
         <div className="bg-gray-900 border border-gray-700 p-3 rounded text-xs text-gray-300 shadow-lg">
           <p className="font-semibold text-white mb-1">{payload[0].name}</p>
           <p>{payload[0].value.toLocaleString()}</p>
-          <p className="text-gray-400">{percent}%</p>
+          <p className="text-gray-400">{percent}</p>
         </div>
       )
     }
@@ -67,7 +73,7 @@ export default function EngagementChart({ video, isLoading = false }) {
             cx="50%"
             cy="50%"
             labelLine={false}
-            label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+            label={({ value }) => `${value.toLocaleString()}`}
             outerRadius={100}
             fill="#8884d8"
             dataKey="value"
@@ -77,7 +83,10 @@ export default function EngagementChart({ video, isLoading = false }) {
             ))}
           </Pie>
           <Tooltip content={<CustomTooltip />} />
-          <Legend />
+          <Legend formatter={(value, entry) => {
+            const v = entry?.payload?.value || 0
+            return `${value} ${formatPercent(v)}`
+          }} />
         </PieChart>
       </ResponsiveContainer>
     </div>

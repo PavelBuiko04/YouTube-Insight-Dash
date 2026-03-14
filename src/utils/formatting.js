@@ -25,6 +25,18 @@ export const formatDuration = (duration) => {
   return `${minutes}:${String(seconds).padStart(2, '0')}`
 }
 
+export const durationToSeconds = (duration) => {
+  if (!duration) return 0
+  const match = duration.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/)
+  if (!match) return 0
+
+  const hours = match[1] ? parseInt(match[1]) : 0
+  const minutes = match[2] ? parseInt(match[2]) : 0
+  const seconds = match[3] ? parseInt(match[3]) : 0
+
+  return (hours * 3600) + (minutes * 60) + seconds
+}
+
 export const calculateEngagementScore = (statistics) => {
   if (!statistics) return 0
   
@@ -109,18 +121,24 @@ export const getVelocityLevel = (velocity) => {
 }
 
 // Analyze sentiment of comments
-export const analyzeSentiment = (comments) => {
+export const analyzeSentiment = (comments, percentToAnalyze = 100) => {
   if (!comments || comments.length === 0) {
     return { 
       sentiment: 'No Data', 
       score: 0, 
       positive: 0, 
       neutral: 0, 
-      negative: 0 
+      negative: 0,
+      total: 0,
+      analyzed: 0
     }
   }
 
   try {
+    // Calculate how many comments to analyze based on percentage
+    const commentsToAnalyze = Math.ceil((comments.length * percentToAnalyze) / 100)
+    const analyzedComments = comments.slice(0, commentsToAnalyze)
+
     // Simple sentiment analysis based on keyword matching
     const positiveKeywords = ['love', 'great', 'amazing', 'awesome', 'excellent', 'perfect', 'best', 'good', 'nice', 'thank', 'thanks', 'brilliant', 'wonderful', 'fantastic', 'cool']
     const negativeKeywords = ['hate', 'bad', 'terrible', 'awful', 'worst', 'horrible', 'disgusting', 'poor', 'wrong', 'sad', 'disappointed', 'waste', 'stupid', 'trash', 'useless']
@@ -129,7 +147,7 @@ export const analyzeSentiment = (comments) => {
     let negative = 0
     let neutral = 0
 
-    comments.forEach(comment => {
+    analyzedComments.forEach(comment => {
       const lowerComment = comment.toLowerCase()
       
       const hasPositive = positiveKeywords.some(keyword => lowerComment.includes(keyword))
@@ -145,7 +163,7 @@ export const analyzeSentiment = (comments) => {
     })
 
     // Calculate overall sentiment
-    const total = comments.length
+    const total = analyzedComments.length
     const positiveRatio = (positive / total) * 100
     const negativeRatio = (negative / total) * 100
     const neutralRatio = (neutral / total) * 100
@@ -177,6 +195,7 @@ export const analyzeSentiment = (comments) => {
       neutral: parseInt(neutral),
       negative: parseInt(negative),
       total: comments.length,
+      analyzed: total,
     }
   } catch (error) {
     console.error('Sentiment analysis error:', error)
@@ -185,7 +204,9 @@ export const analyzeSentiment = (comments) => {
       score: 0, 
       positive: 0, 
       neutral: 0, 
-      negative: 0 
+      negative: 0,
+      total: 0,
+      analyzed: 0
     }
   }
 }

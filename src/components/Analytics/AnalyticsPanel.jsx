@@ -87,20 +87,33 @@ const SEOTags = ({ tags }) => {
 
 export default function AnalyticsPanel({ video, similarVideos }) {
   const [sentimentData, setSentimentData] = useState(null)
+  const [sentimentCount, setSentimentCount] = useState(20)
   
   if (!video || !video.statistics) {
     return <div className="text-center text-gray-400 py-8">Loading analytics...</div>
   }
 
-  // Fetch comments for sentiment analysis
+  const stats = video.statistics
+  const totalCommentCount = parseInt(stats.commentCount || 0)
+  const minSentimentCount = 20
+  const maxSentimentCount = 500
+  const clampedSentimentCount = Math.min(
+    Math.max(sentimentCount, minSentimentCount),
+    maxSentimentCount
+  )
+  const targetComments = totalCommentCount > 0
+    ? Math.min(totalCommentCount, clampedSentimentCount)
+    : 0
+
+  // Fetch comments for sentiment analysis based on selected percent
   const { data: comments } = useQuery({
-    queryKey: ['videoComments', video.id],
-    queryFn: () => getVideoComments(video.id),
-    enabled: Boolean(video.id),
+    queryKey: ['videoComments', video.id, targetComments],
+    queryFn: () => getVideoComments(video.id, targetComments),
+    enabled: Boolean(video.id) && targetComments > 0,
     staleTime: 1000 * 60 * 30, // Cache for 30 minutes
   })
 
-  // Analyze sentiment when comments arrive
+  // Analyze sentiment when comments arrive or percent changes
   useEffect(() => {
     if (comments && comments.length > 0) {
       const sentiment = analyzeSentiment(comments)
@@ -108,14 +121,13 @@ export default function AnalyticsPanel({ video, similarVideos }) {
     }
   }, [comments])
 
-  const stats = video.statistics
   const engagement = calculateEngagementRate(stats)
   const engagementMeta = getEngagementLevel(parseFloat(engagement))
   const tags = video.snippet.tags || []
 
   const viewCount = parseInt(stats.viewCount || 0)
   const likeCount = parseInt(stats.likeCount || 0)
-  const commentCount = parseInt(stats.commentCount || 0)
+  const commentCount = totalCommentCount
 
   const likePercent = viewCount > 0 ? ((likeCount / viewCount) * 100).toFixed(2) : 0
   const commentPercent = viewCount > 0 ? ((commentCount / viewCount) * 100).toFixed(2) : 0
@@ -129,12 +141,17 @@ export default function AnalyticsPanel({ video, similarVideos }) {
   return (
     <div className="space-y-6">
       {/* Title and Description */}
-      <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
-        <h2 className="text-2xl font-bold text-white mb-2">{video.snippet.title}</h2>
-        <p className="text-gray-400 text-sm mb-4">{truncateText(video.snippet.description, 200)}</p>
-        <p className="text-xs text-gray-500">
-          Channel: <span className="text-gray-300">{video.snippet.channelTitle}</span>
-        </p>
+      <div className="bg-gray-900 rounded-lg p-6 border border-gray-800 flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+        <div>
+          <h2 className="text-2xl font-bold text-white mb-2">{video.snippet.title}</h2>
+          <p className="text-gray-400 text-sm mb-4">{truncateText(video.snippet.description, 200)}</p>
+          <p className="text-xs text-gray-500">
+            Channel: <span className="text-gray-300">{video.snippet.channelTitle}</span>
+          </p>
+        </div>
+        <div className="self-start bg-gray-800 border border-gray-700 text-gray-300 text-xs px-3 py-2 rounded">
+          Free plan: up to 20 videos
+        </div>
       </div>
 
       {/* Stats Grid */}
@@ -204,6 +221,59 @@ export default function AnalyticsPanel({ video, similarVideos }) {
           </div>
         </div>
       </div>
+
+      {/* Sentiment Analysis Settings */}
+      {comments && comments.length > 0 && (
+        <div className="bg-gray-900 rounded-lg p-4 border border-gray-800">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h4 className="text-white font-semibold">Sentiment Analysis</h4>
+              <p className="text-xs text-gray-400 mt-1">
+                Analyzing {sentimentData?.analyzed} of {commentCount || sentimentData?.total} comments (selected {targetComments})
+              </p>
+            </div>
+            <MessageCircle className="w-5 h-5 text-gray-400" />
+          </div>
+          
+          <div className="flex flex-wrap gap-2">
+            {[20, 50, 100, 200, 500].map(count => (
+              <button
+                key={count}
+                onClick={() => setSentimentCount(count)}
+                className={`px-4 py-2 rounded transition font-medium text-sm ${
+                  sentimentCount === count
+                    ? 'bg-youtube-red text-white'
+                    : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                }`}
+              >
+                {count}
+              </button>
+            ))}
+            <div className="px-4 py-2 rounded text-sm font-medium bg-gray-800 text-gray-500 border border-gray-700 cursor-not-allowed">
+              Pro
+            </div>
+          </div>
+
+          {sentimentData && (
+            <div className="mt-4 pt-4 border-t border-gray-800">
+              <div className="grid grid-cols-3 gap-3">
+                <div className="bg-gray-800 rounded p-3">
+                  <p className="text-xs text-green-400 mb-1">Positive</p>
+                  <p className="text-xl font-bold text-white">{sentimentData.positive}</p>
+                </div>
+                <div className="bg-gray-800 rounded p-3">
+                  <p className="text-xs text-gray-400 mb-1">Neutral</p>
+                  <p className="text-xl font-bold text-white">{sentimentData.neutral}</p>
+                </div>
+                <div className="bg-gray-800 rounded p-3">
+                  <p className="text-xs text-red-400 mb-1">Negative</p>
+                  <p className="text-xl font-bold text-white">{sentimentData.negative}</p>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* SEO Tags */}
       <SEOTags tags={tags} />

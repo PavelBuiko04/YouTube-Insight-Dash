@@ -89,10 +89,11 @@ Formula: (Likes + Comments) / Views × 100
 - **One-Click Copy** — Copy all tags as comma-separated list
 - **Tag Management** — Easy review and reuse of successful tags
 
-### 4️⃣ Comparison Metrics  
-- **Interactive Bar Chart** — Compare views, likes, comments across top 5 results
-- **Click to Select** — Click any bar to instantly load that video's detailed analytics
-- **Engagement Pie Chart** — Visual breakdown of likes vs comments distribution
+### 4️⃣ Comparison Metrics
+- **Channel Videos Comparison** — Compare with top 5 most popular videos from the same channel
+- **Bar Chart** — Compare views, likes, comments of channel videos (click bars to select video)
+- **Pie Chart** — Engagement distribution (likes vs comments)
+- **Interactive Selection** — Click any bar to load that video's detailed analytics
 
 ## 📊 Metrics Explained
 
@@ -103,13 +104,14 @@ Formula: (Likes + Comments) / Views × 100
 | **Comment Rate** | Comments / Views × 100 | How many viewers engaged in discussion |
 | **Engagement Level** | Calculated score bracket | Quick reference for performance |
 | **Velocity** | Views / Days since publish | Average views per day; shows virality |
+| **Sentiment Score** | Keyword-based comment analysis | Mood: Positive → Mostly Positive → Mixed → Mostly Negative → Negative |
 
 ## 🔧 Installation & Setup
 
 ### Prerequisites
 - Node.js 16+ and npm/yarn
 - Google API Key (YouTube Data API v3)
-
+ 
 ### 1. Install Dependencies
 ```bash
 npm install

@@ -51,7 +51,7 @@ export const getVideoStatistics = async (videoIds) => {
     const ids = videoIds.slice(0, 50).join(',')
     const response = await api.get('/videos', {
       params: {
-        part: 'snippet,statistics',
+        part: 'snippet,statistics,contentDetails',
         id: ids,
       },
     })
@@ -97,26 +97,37 @@ export const searchVideosByChannel = async (channelId) => {
   }
 }
 
-export const getVideoComments = async (videoId) => {
+export const getVideoComments = async (videoId, maxComments = 100) => {
   if (!videoId) return []
+  if (!maxComments || maxComments <= 0) return []
   
   try {
-    const response = await api.get('/commentThreads', {
-      params: {
-        part: 'snippet',
-        videoId,
-        maxResults: 20,
-        order: 'relevance',
-        textFormat: 'plainText',
-      },
-    })
+    const comments = []
+    let pageToken = undefined
+
+    while (comments.length < maxComments) {
+      const remaining = maxComments - comments.length
+      const response = await api.get('/commentThreads', {
+        params: {
+          part: 'snippet',
+          videoId,
+          maxResults: Math.min(100, remaining),
+          order: 'relevance',
+          textFormat: 'plainText',
+          pageToken,
+        },
+      })
+      
+      const batch = (response.data.items || []).map(item => 
+        item.snippet.topLevelComment.snippet.textDisplay
+      )
+      comments.push(...batch)
+
+      pageToken = response.data.nextPageToken
+      if (!pageToken || batch.length === 0) break
+    }
     
-    // Extract comment text from response
-    const comments = (response.data.items || []).map(item => 
-      item.snippet.topLevelComment.snippet.textDisplay
-    )
-    
-    return comments
+    return comments.slice(0, maxComments)
   } catch (error) {
     console.error('Video comments error:', error)
     return []

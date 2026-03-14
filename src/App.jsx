@@ -1,11 +1,14 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useQuery } from '@tanstack/react-query'
+import html2canvas from 'html2canvas'
+import jsPDF from 'jspdf'
 import SearchBar from './components/Search/SearchBar'
 import VideoPlayer from './components/Video/VideoPlayer'
 import VideoList from './components/Video/VideoList'
 import AnalyticsPanel from './components/Analytics/AnalyticsPanel'
 import ComparisonChart from './components/Charts/ComparisonChart'
 import EngagementChart from './components/Charts/EngagementChart'
+import DurationViewsChart from './components/Charts/DurationViewsChart'
 import { searchVideos, getVideoDetails, getVideoStatistics, searchVideosByChannel } from './api/youtubeApi'
 
 export default function App() {
@@ -14,6 +17,10 @@ export default function App() {
   const [videosList, setVideosList] = useState([])
   const [videosWithStats, setVideosWithStats] = useState([])
   const [channelVideos, setChannelVideos] = useState([])
+  const [durationLimit, setDurationLimit] = useState(5)
+  const [durationPro, setDurationPro] = useState(false)
+  const [isExporting, setIsExporting] = useState(false)
+  const exportRef = useRef(null)
 
   // Fetch search results
   const { data: searchData, isLoading: isSearching } = useQuery({
@@ -39,10 +46,11 @@ export default function App() {
   })
 
   // Fetch stats for comparison videos (from same channel)
+  const statsLimit = Math.max(5, durationLimit)
   const { data: comparisonStats } = useQuery({
-    queryKey: ['videoStats', channelVideos.slice(0, 5).map(v => v.id.videoId).join(',')],
+    queryKey: ['videoStats', channelVideos.slice(0, statsLimit).map(v => v.id.videoId).join(',')],
     queryFn: () => {
-      const ids = channelVideos.slice(0, 5).map(v => v.id.videoId)
+      const ids = channelVideos.slice(0, statsLimit).map(v => v.id.videoId)
       return getVideoStatistics(ids)
     },
     enabled: channelVideos.length > 0,
@@ -82,6 +90,54 @@ export default function App() {
     setSelectedVideoId(videoId)
   }
 
+  const handleDurationLimitChange = (value) => {
+    const next = Number.isFinite(value) ? Math.floor(value) : 0
+    if (next > 20) {
+      setDurationPro(true)
+      return
+    }
+    setDurationPro(false)
+    if (next >= 1) {
+      setDurationLimit(next)
+    }
+  }
+
+  const handleExportPdf = async () => {
+    if (!exportRef.current || isExporting) return
+    setIsExporting(true)
+    try {
+      const canvas = await html2canvas(exportRef.current, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#0b0b0b',
+        scrollY: -window.scrollY,
+      })
+      const imgData = canvas.toDataURL('image/png')
+      const pdf = new jsPDF('p', 'mm', 'a4')
+      const pdfWidth = pdf.internal.pageSize.getWidth()
+      const pdfHeight = pdf.internal.pageSize.getHeight()
+      const imgProps = pdf.getImageProperties(imgData)
+      const imgHeight = (imgProps.height * pdfWidth) / imgProps.width
+      let heightLeft = imgHeight
+      let position = 0
+
+      pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeight)
+      heightLeft -= pdfHeight
+
+      while (heightLeft > 0) {
+        position = heightLeft - imgHeight
+        pdf.addPage()
+        pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeight)
+        heightLeft -= pdfHeight
+      }
+
+      const date = new Date().toISOString().slice(0, 10)
+      pdf.save(`youtube-insight-${date}.pdf`)
+    } finally {
+      setIsExporting(false)
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-youtube-dark via-gray-900 to-black">
       {/* Header */}
@@ -95,13 +151,24 @@ export default function App() {
             <span className="ml-auto text-xs bg-youtube-red px-3 py-1 rounded-full text-white">
               Pro Analytics
             </span>
+            <button
+              onClick={handleExportPdf}
+              disabled={!selectedVideoId || isExporting}
+              className={`text-xs px-3 py-1 rounded-full border ${
+                !selectedVideoId || isExporting
+                  ? 'bg-gray-800 text-gray-500 border-gray-700 cursor-not-allowed'
+                  : 'bg-gray-900 text-gray-200 border-gray-700 hover:bg-gray-800'
+              }`}
+            >
+              {isExporting ? 'Exporting...' : 'Export PDF'}
+            </button>
           </div>
           <SearchBar onSearch={handleSearch} isLoading={isSearching} />
         </div>
       </header>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 py-6">
+      <div ref={exportRef} className="max-w-7xl mx-auto px-4 py-6">
         {searchQuery ? (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Main Player & Analytics */}
@@ -129,6 +196,13 @@ export default function App() {
                   <ComparisonChart 
                     videos={videosWithStats} 
                     onVideoClick={handleVideoSelect}
+                  />
+                  <DurationViewsChart
+                    videos={videosWithStats}
+                    totalAvailable={channelSearchResults?.pageInfo?.totalResults || channelVideos.length}
+                    limit={durationLimit}
+                    showPro={durationPro}
+                    onLimitChange={handleDurationLimitChange}
                   />
                   <EngagementChart video={videoDetails} />
                 </div>
