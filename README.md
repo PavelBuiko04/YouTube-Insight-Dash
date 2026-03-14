@@ -224,5 +224,5 @@ Have questions? Issues? Suggestions?
 
 ---
 
-**Built with ❤️ in 2024 | Professional Grade Analytics for YouTube**
+**Built with ❤️ in 2024 | Professional Grade Analytics for YouTube** 
  
