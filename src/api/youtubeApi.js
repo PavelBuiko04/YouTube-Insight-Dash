@@ -4,7 +4,7 @@ const YOUTUBE_API_KEY = import.meta.env.VITE_YOUTUBE_API_KEY
 const YOUTUBE_BASE_URL = 'https://www.googleapis.com/youtube/v3'
 
 if (!YOUTUBE_API_KEY) {
-  console.warn('⚠️ VITE_YOUTUBE_API_KEY is not set. Please check your .env.local file.')
+  console.warn('VITE_YOUTUBE_API_KEY is not set. Please check your .env.local file.')
 }
 
 const api = axios.create({

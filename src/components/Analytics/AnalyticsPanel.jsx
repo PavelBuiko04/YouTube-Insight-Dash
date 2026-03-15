@@ -299,10 +299,10 @@ export default function AnalyticsPanel({ video, similarVideos }) {
               <div className="bg-green-500 h-full rounded-full" style={{ width: `${Math.min(likePercent, 100)}%` }}></div>
             </div>
             <p className="text-xs text-gray-400 mt-2">
-              {parseFloat(likePercent) > 10 && '👏 Excellent engagement rate - viewers love this content'}
-              {parseFloat(likePercent) > 5 && parseFloat(likePercent) <= 10 && '✅ Good engagement - viewers are actively expressing appreciation'}
-              {parseFloat(likePercent) > 1 && parseFloat(likePercent) <= 5 && '⚠️ Average performance - work on improving content quality'}
-              {parseFloat(likePercent) <= 1 && '❌ Low engagement - focus on creating more engaging content'}
+              {parseFloat(likePercent) > 10 && 'Excellent engagement rate - viewers love this content'}
+              {parseFloat(likePercent) > 5 && parseFloat(likePercent) <= 10 && 'Good engagement - viewers are actively expressing appreciation'}
+              {parseFloat(likePercent) > 1 && parseFloat(likePercent) <= 5 && 'Average performance - work on improving content quality'}
+              {parseFloat(likePercent) <= 1 && 'Low engagement - focus on creating more engaging content'}
             </p>
           </div>
 
@@ -323,10 +323,10 @@ export default function AnalyticsPanel({ video, similarVideos }) {
               <div className="bg-orange-500 h-full rounded-full" style={{ width: `${Math.min(commentPercent, 100)}%` }}></div>
             </div>
             <p className="text-xs text-gray-400 mt-2">
-              {parseFloat(commentPercent) > 1 && '👏 Excellent - audience is actively discussing your video'}
-              {parseFloat(commentPercent) > 0.5 && parseFloat(commentPercent) <= 1 && '✅ Good - viewers are leaving comments and engaging'}
-              {parseFloat(commentPercent) > 0.1 && parseFloat(commentPercent) <= 0.5 && '⚠️ Average - encourage discussion by asking questions'}
-              {parseFloat(commentPercent) <= 0.1 && '❌ Low - try asking questions to prompt comments'}
+              {parseFloat(commentPercent) > 1 && 'Excellent - audience is actively discussing your video'}
+              {parseFloat(commentPercent) > 0.5 && parseFloat(commentPercent) <= 1 && 'Good - viewers are leaving comments and engaging'}
+              {parseFloat(commentPercent) > 0.1 && parseFloat(commentPercent) <= 0.5 && 'Average - encourage discussion by asking questions'}
+              {parseFloat(commentPercent) <= 0.1 && 'Low - try asking questions to prompt comments'}
             </p>
           </div>
         </div>
