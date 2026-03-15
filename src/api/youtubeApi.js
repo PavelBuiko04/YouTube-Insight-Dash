@@ -1,26 +1,28 @@
 import axios from 'axios'
 
-const API_KEY = import.meta.env.VITE_YOUTUBE_API_KEY
-const BASE_URL = 'https://www.googleapis.com/youtube/v3'
+const YOUTUBE_API_KEY = import.meta.env.VITE_YOUTUBE_API_KEY
+const YOUTUBE_BASE_URL = 'https://www.googleapis.com/youtube/v3'
+
+if (!YOUTUBE_API_KEY) {
+  console.warn('⚠️ VITE_YOUTUBE_API_KEY is not set. Please check your .env.local file.')
+}
 
 const api = axios.create({
-  baseURL: BASE_URL,
+  baseURL: YOUTUBE_BASE_URL,
   params: {
-    key: API_KEY,
+    key: YOUTUBE_API_KEY,
   },
 })
 
 export const searchVideos = async (query) => {
   try {
-    const response = await api.get('/search', {
-      params: {
-        part: 'snippet',
-        q: query,
-        type: 'video',
-        maxResults: 20,
-        order: 'relevance',
-      },
-    })
+    const response = await api.get('/search', { params: { 
+      q: query,
+      part: 'snippet',
+      type: 'video',
+      maxResults: 20,
+      order: 'relevance'
+    } })
     return response.data
   } catch (error) {
     console.error('Search error:', error)
@@ -30,13 +32,11 @@ export const searchVideos = async (query) => {
 
 export const getVideoDetails = async (videoId) => {
   try {
-    const response = await api.get('/videos', {
-      params: {
-        part: 'snippet,statistics,contentDetails',
-        id: videoId,
-      },
-    })
-    return response.data.items[0]
+    const response = await api.get('/videos', { params: { 
+      id: videoId,
+      part: 'snippet,statistics,contentDetails'
+    } })
+    return response.data.items?.[0] || null
   } catch (error) {
     console.error('Video details error:', error)
     throw error
@@ -49,12 +49,10 @@ export const getVideoStatistics = async (videoIds) => {
   try {
     // YouTube API allows max 50 IDs per request
     const ids = videoIds.slice(0, 50).join(',')
-    const response = await api.get('/videos', {
-      params: {
-        part: 'snippet,statistics,contentDetails',
-        id: ids,
-      },
-    })
+    const response = await api.get('/videos', { params: { 
+      id: ids,
+      part: 'snippet,statistics,contentDetails'
+    } })
     return response.data.items || []
   } catch (error) {
     console.error('Video statistics error:', error)
@@ -64,13 +62,11 @@ export const getVideoStatistics = async (videoIds) => {
 
 export const getChannelDetails = async (channelId) => {
   try {
-    const response = await api.get('/channels', {
-      params: {
-        part: 'snippet,statistics',
-        id: channelId,
-      },
-    })
-    return response.data.items[0]
+    const response = await api.get('/channels', { params: { 
+      id: channelId,
+      part: 'snippet,statistics'
+    } })
+    return response.data.items?.[0] || null
   } catch (error) {
     console.error('Channel details error:', error)
     throw error
@@ -81,15 +77,13 @@ export const searchVideosByChannel = async (channelId) => {
   if (!channelId) return null
   
   try {
-    const response = await api.get('/search', {
-      params: {
-        part: 'snippet',
-        channelId,
-        type: 'video',
-        maxResults: 20,
-        order: 'viewCount',
-      },
-    })
+    const response = await api.get('/search', { params: { 
+      channelId,
+      part: 'snippet',
+      type: 'video',
+      maxResults: 20,
+      order: 'viewCount'
+    } })
     return response.data
   } catch (error) {
     console.error('Channel search error:', error)
@@ -102,11 +96,12 @@ export const getVideoComments = async (videoId, maxComments = 100) => {
   if (!maxComments || maxComments <= 0) return []
   
   try {
+    const max = Math.max(1, Math.min(maxComments, 500))
     const comments = []
     let pageToken = undefined
 
-    while (comments.length < maxComments) {
-      const remaining = maxComments - comments.length
+    while (comments.length < max) {
+      const remaining = max - comments.length
       const response = await api.get('/commentThreads', {
         params: {
           part: 'snippet',
@@ -117,8 +112,8 @@ export const getVideoComments = async (videoId, maxComments = 100) => {
           pageToken,
         },
       })
-      
-      const batch = (response.data.items || []).map(item => 
+
+      const batch = (response.data.items || []).map(item =>
         item.snippet.topLevelComment.snippet.textDisplay
       )
       comments.push(...batch)
@@ -126,8 +121,8 @@ export const getVideoComments = async (videoId, maxComments = 100) => {
       pageToken = response.data.nextPageToken
       if (!pageToken || batch.length === 0) break
     }
-    
-    return comments.slice(0, maxComments)
+
+    return comments.slice(0, max)
   } catch (error) {
     console.error('Video comments error:', error)
     return []

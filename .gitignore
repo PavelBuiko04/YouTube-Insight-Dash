@@ -1,31 +1,64 @@
 # Environment variables
+# NEVER commit .env.local - contains sensitive data
 .env
 .env.local
 .env.*.local
-.env.* 
+.env.production.local
 !.env.example
-secrets/
+
+# Only .env.example should be in the repo (with placeholder values)
 
 # Dependencies
 node_modules/
-npm-debug.log
-yarn-error.log
+package-lock.json
+yarn.lock
+npm-debug.log*
+yarn-error.log*
 
-# Build
+# Build outputs
 dist/
 build/
+.out/
+.next/
 
-# IDE
+# IDE & Editor
 .vscode/
 .idea/
+.DS_Store
+Thumbs.db
+*.suo
+*.sln
 *.swp
 *.swo
 *~
-
-# OS
-.DS_Store
-Thumbs.db
+.project
+.classpath
+.c9/
 
 # Logs
-*.log
 logs/
+*.log
+*.log*
+
+# Runtime data
+pids/
+*.seed
+*.pid.lock
+
+# Coverage
+coverage/
+.nyc_output/
+
+# Third-party secrets
+secrets/
+.env.vault
+
+# OS-specific
+.AppleDouble
+.LSOverride
+._*
+
+# Temporary files
+.tmp
+temp/
+tmp/
