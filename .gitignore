@@ -62,3 +62,4 @@ secrets/
 .tmp
 temp/
 tmp/
+dist/
