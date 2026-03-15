@@ -112,12 +112,12 @@ export const calculateVelocity = (viewCount, publishedAt) => {
 
 // Get virality level based on Velocity
 export const getVelocityLevel = (velocity) => {
-  if (velocity > 100000) return { level: 'Viral 🚀', color: 'text-red-400', desc: 'Extremely viral content' }
-  if (velocity > 50000) return { level: 'Trending 🔥', color: 'text-orange-400', desc: 'Very high growth rate' }
-  if (velocity > 10000) return { level: 'Excellent 👍', color: 'text-green-400', desc: 'Strong viewership growth' }
-  if (velocity > 1000) return { level: 'Good ✅', color: 'text-blue-400', desc: 'Healthy growth rate' }
-  if (velocity > 100) return { level: 'Average 📊', color: 'text-yellow-400', desc: 'Moderate growth' }
-  return { level: 'Slow 📉', color: 'text-gray-400', desc: 'Low growth rate' }
+  if (velocity > 100000) return { level: 'Viral', color: 'text-red-400', desc: 'Extremely viral content' }
+  if (velocity > 50000) return { level: 'Trending', color: 'text-orange-400', desc: 'Very high growth rate' }
+  if (velocity > 10000) return { level: 'Excellent', color: 'text-green-400', desc: 'Strong viewership growth' }
+  if (velocity > 1000) return { level: 'Good', color: 'text-blue-400', desc: 'Healthy growth rate' }
+  if (velocity > 100) return { level: 'Average', color: 'text-yellow-400', desc: 'Moderate growth' }
+  return { level: 'Slow', color: 'text-gray-400', desc: 'Low growth rate' }
 }
 
 // Analyze sentiment of comments
@@ -217,14 +217,14 @@ export const getSentimentLevel = (sentiment) => {
     case 'Positive':
       return { level: 'Positive 👍', emoji: '👍', color: 'text-green-400', bg: 'from-green-600 to-green-700', desc: 'Audience loves this content' }
     case 'Mostly Positive':
-      return { level: 'Mostly Positive 😊', emoji: '😊', color: 'text-green-300', bg: 'from-green-500 to-green-600', desc: 'Generally positive feedback' }
+      return { level: 'Mostly Positive', emoji: '', color: 'text-green-300', bg: 'from-green-500 to-green-600', desc: 'Generally positive feedback' }
     case 'Mixed':
-      return { level: 'Mixed 🤷', emoji: '🤷', color: 'text-yellow-400', bg: 'from-yellow-600 to-yellow-700', desc: 'Divided audience opinions' }
+      return { level: 'Mixed', emoji: '', color: 'text-yellow-400', bg: 'from-yellow-600 to-yellow-700', desc: 'Divided audience opinions' }
     case 'Mostly Negative':
-      return { level: 'Mostly Negative 😟', emoji: '😟', color: 'text-orange-400', bg: 'from-orange-600 to-orange-700', desc: 'Mostly critical feedback' }
+      return { level: 'Mostly Negative', emoji: '', color: 'text-orange-400', bg: 'from-orange-600 to-orange-700', desc: 'Mostly critical feedback' }
     case 'Negative':
-      return { level: 'Negative 👎', emoji: '👎', color: 'text-red-400', bg: 'from-red-600 to-red-700', desc: 'Audience dislikes this content' }
+      return { level: 'Negative', emoji: '', color: 'text-red-400', bg: 'from-red-600 to-red-700', desc: 'Audience dislikes this content' }
     default:
-      return { level: 'No Data', emoji: '❓', color: 'text-gray-400', bg: 'from-gray-600 to-gray-700', desc: 'Unable to analyze sentiment' }
+      return { level: 'No Data', emoji: '', color: 'text-gray-400', bg: 'from-gray-600 to-gray-700', desc: 'Unable to analyze sentiment' }
   }
 }

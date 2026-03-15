@@ -1,25 +1,25 @@
-# YouTube Insight Dash - Professional Video Analytics Platform
+# 📊 YouTube Insight Dash - Professional Video Analytics Platform
 
 A modern, elegant web application for deep YouTube video analysis with real-time engagement metrics, analytics, and SEO insights.
 
-> **Quick setup?** See [QUICK_START.md](QUICK_START.md) (5 min)  
-> **Detailed guide?** See [SETUP.md](SETUP.md)
+> **⚡ Quick setup?** See [QUICK_START.md](QUICK_START.md) (5 min)  
+> **📖 Detailed guide?** See [SETUP.md](SETUP.md)
 
-## Overview
+## 🎯 Overview
 
 YouTube Insight Dash transforms YouTube data into actionable business intelligence. Perfect for content creators, marketers, and strategists who want to:
 
-- **Search & Discover** videos with intelligent filtering
-- **Analyze Performance** with custom engagement metrics
-- **Extract SEO Data** with one-click tag management
-- **Compare Metrics** across similar content
-- **Visualize Trends** with interactive charts
+- 🔍 **Search & Discover** videos with intelligent filtering
+- 📊 **Analyze Performance** with custom engagement metrics
+- 🏷️ **Extract SEO Data** with one-click tag management
+- 📈 **Compare Metrics** across similar content
+- 📉 **Visualize Trends** with interactive charts
 
 ### 📸 Screenshot
 
 ![YouTube Insight Dash Application](app.png)
 
-## Tech Stack
+## 🛠 Tech Stack
 
 | Layer | Technology | Purpose |
 |-------|-----------|--------|
@@ -31,7 +31,7 @@ YouTube Insight Dash transforms YouTube data into actionable business intelligen
 | **HTTP** | Axios | Robust API client |
 | **Charts** | Recharts | Interactive data visualization |
 
-## Project Structure
+## 📦 Project Structure
 
 ```
 src/
@@ -51,14 +51,14 @@ src/
 └── App.jsx                         Main dashboard
 ```
 
-## Key Features
+## 🚀 Key Features
 
-### Intelligent Search
+### 📍 Intelligent Search
 - **Debounced input** — Triggers after 500ms (reduces API calls by 90%)
 - **Quick filter buttons** — Trending, tech, educational, music, gaming
 - **Real-time loading** — Visual feedback with loaders
 
-### Deep Video Analytics
+### 📊 Deep Video Analytics
 
 **Engagement Score (KPI):**
 $$\text{Score} = \frac{\text{Likes} + \text{Comments}}{\text{Views}} \times 100$$
@@ -77,20 +77,20 @@ $$\text{Score} = \frac{\text{Likes} + \text{Comments}}{\text{Views}} \times 100$
 - Velocity score (views/day)
 - Visual progress breakdowns
 
-### SEO Tools
+### 🏷️ SEO Tools
 - Extract all video tags
 - Copy as comma-separated list
 - Analyze tag patterns across channels
 
-### Comparison Analytics
+### 📊 Comparison Analytics
 - Compare against top 5 channel videos
 - Interactive bar chart (click to select)
 - Engagement pie chart
 - Side-by-side metrics
 
-## � Getting Started
+## ⚡️ Getting Started
 
-**Quick setup (5 min):**
+**⚡ Quick setup (5 min):**
 ```bash
 cp .env.example .env.local
 # Add your YouTube API key to .env.local
@@ -101,14 +101,14 @@ npm install && npm run dev
 
 **To understand configuration:** See [CONFIG_STRUCTURE.md](CONFIG_STRUCTURE.md)
 
-## Configuration
+## 🔑 Configuration
 
 Required environment variable:
 - `VITE_YOUTUBE_API_KEY` — YouTube Data API v3 key (from [Google Cloud Console](https://console.cloud.google.com/))
 
-> Never commit `.env.local`. Always use `.env.example` as template.
+> ⚠️ Never commit `.env.local`. Always use `.env.example` as template.
 
-## Metrics Reference
+## 📊 Metrics Reference
 
 | Metric | Formula | Interpretation |
 |--------|---------|-----------------|
@@ -119,14 +119,14 @@ Required environment variable:
 | **Velocity** | Views / Days published | Average views per day |
 | **Sentiment** | Comment analysis | Audience mood indicator |
 
-## Design
+## 🎨 Design
 
 YouTube-inspired dark theme:
 - Dark backgrounds with red accents
 - Responsive grid layout
 - Accessible color contrasts
 
-## Performance
+## ⚡ Performance
 
 - **React Query caching** — 5-10 minute result cache
 - **Debounced search** — 90% fewer API calls
@@ -134,7 +134,7 @@ YouTube-inspired dark theme:
 - **Optimized images** — Thumbnail caching
 - **Minimal CSS** — Tailwind utility classes
 
-## API Rate Limits
+## ⚠️ API Rate Limits
 
 YouTube API Free Tier:
 - **10,000 units/day** (≈100-200 videos/month)
@@ -143,15 +143,15 @@ YouTube API Free Tier:
 
 [Monitor quota →](https://console.cloud.google.com/apis/dashboard)
 
-## Security
+## 🔒 Security
 
-✓ API key never in source code  
-✓ `.env.local` protected by `.gitignore`  
-✓ Environment variables for production  
+✅ API key never in source code  
+✅ `.env.local` protected by `.gitignore`  
+✅ Environment variables for production  
 
 See [CONFIG_STRUCTURE.md](CONFIG_STRUCTURE.md) for details.
 
-## Available Commands
+## 📚 Available Commands
 
 ```bash
 npm run dev      # Development server (http://localhost:8000)

@@ -1,10 +1,10 @@
-# Quick Start Guide
+# 🚀 Quick Start Guide
 
 Get running in **5 minutes**.
 
 ## 4 Steps
 
-### 1. Copy Template
+### 1️⃣ Copy Template
 ```bash
 cp .env.example .env.local
 ```
