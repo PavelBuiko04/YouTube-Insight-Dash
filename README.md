@@ -90,7 +90,7 @@ $$\text{Score} = \frac{\text{Likes} + \text{Comments}}{\text{Views}} \times 100$
 
 ## ⚡️ Getting Started
 
-**⚡ Quick setup (5 min):**
+**⚡️ Quick setup (5 min):**
 ```bash
 cp .env.example .env.local
 # Add your YouTube API key to .env.local
@@ -194,7 +194,7 @@ Contributions welcome! Please:
 ## 📧 Support
 
 Have questions? Issues? Suggestions?
-- Create an [Issue](https://github.com/yourusername/youtube-insight-dash/issues)
+- Create an [Issue](https://github.com/PavelBuiko04/YouTube-Insight-Dash/issues)
 
 ---
 

@@ -1,10 +1,14 @@
 import axios from 'axios'
+import { mockVideoDetails, mockSearchResults, mockChannelVideos } from '../data/mockData'
 
 const YOUTUBE_API_KEY = import.meta.env.VITE_YOUTUBE_API_KEY
 const YOUTUBE_BASE_URL = 'https://www.googleapis.com/youtube/v3'
 
+// Demo mode flag - enabled when API key is not set
+export const IS_DEMO_MODE = !YOUTUBE_API_KEY
+
 if (!YOUTUBE_API_KEY) {
-  console.warn('VITE_YOUTUBE_API_KEY is not set. Please check your .env.local file.')
+  console.warn('VITE_YOUTUBE_API_KEY is not set. Running in DEMO MODE with sample data.')
 }
 
 const api = axios.create({
@@ -15,6 +19,12 @@ const api = axios.create({
 })
 
 export const searchVideos = async (query) => {
+  if (IS_DEMO_MODE) {
+    // Return mock data in demo mode
+    await new Promise(resolve => setTimeout(resolve, 800)) // Simulate network delay
+    return mockSearchResults
+  }
+  
   try {
     const response = await api.get('/search', { params: { 
       q: query,
@@ -31,6 +41,12 @@ export const searchVideos = async (query) => {
 }
 
 export const getVideoDetails = async (videoId) => {
+  if (IS_DEMO_MODE) {
+    // Return mock data in demo mode
+    await new Promise(resolve => setTimeout(resolve, 600))
+    return mockVideoDetails
+  }
+  
   try {
     const response = await api.get('/videos', { params: { 
       id: videoId,
@@ -45,6 +61,12 @@ export const getVideoDetails = async (videoId) => {
 
 export const getVideoStatistics = async (videoIds) => {
   if (!videoIds || videoIds.length === 0) return []
+  
+  if (IS_DEMO_MODE) {
+    // Return mock data in demo mode
+    await new Promise(resolve => setTimeout(resolve, 500))
+    return mockChannelVideos
+  }
   
   try {
     // YouTube API allows max 50 IDs per request

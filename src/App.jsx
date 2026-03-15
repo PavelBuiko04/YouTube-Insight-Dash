@@ -9,7 +9,7 @@ import AnalyticsPanel from './components/Analytics/AnalyticsPanel'
 import ComparisonChart from './components/Charts/ComparisonChart'
 import EngagementChart from './components/Charts/EngagementChart'
 import DurationViewsChart from './components/Charts/DurationViewsChart'
-import { searchVideos, getVideoDetails, getVideoStatistics, searchVideosByChannel } from './api/youtubeApi'
+import { searchVideos, getVideoDetails, getVideoStatistics, searchVideosByChannel, IS_DEMO_MODE } from './api/youtubeApi'
 
 export default function App() {
   const [searchQuery, setSearchQuery] = useState('')
@@ -82,6 +82,14 @@ export default function App() {
     }
   }, [searchData])
 
+  // Initialize demo mode on mount
+  useEffect(() => {
+    if (IS_DEMO_MODE && !searchQuery && !selectedVideoId) {
+      // Trigger demo search with a default query
+      setSearchQuery('web development tutorial')
+    }
+  }, [])
+
   const handleSearch = (query) => {
     setSearchQuery(query)
   }
@@ -140,6 +148,26 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-youtube-dark via-gray-900 to-black">
+      {/* Demo Mode Banner */}
+      {IS_DEMO_MODE && (
+        <div className="bg-gradient-to-r from-blue-900 to-blue-800 border-b border-blue-700 px-4 py-3">
+          <div className="max-w-7xl mx-auto flex items-center gap-3">
+            <div className="text-blue-200 font-semibold">Demo Mode Active</div>
+            <div className="text-blue-300 text-sm flex-1">
+              You're viewing sample data. To use your own videos, configure your YouTube API key.
+            </div>
+            <a
+              href="https://console.cloud.google.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm bg-blue-600 hover:bg-blue-500 text-white px-4 py-1 rounded whitespace-nowrap"
+            >
+              Get API Key
+            </a>
+          </div>
+        </div>
+      )}
+      
       {/* Header */}
       <header className="bg-black border-b border-gray-800 sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 py-4">
